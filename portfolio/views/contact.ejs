@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact</title>
+    <link rel="stylesheet" href="./styles/contact.css">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&amp;family=Sacramento&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+
+</head>
+<body>
+    <%- include("partials/header.ejs")%>
+
+    <div>
+      <h1>Lets Get In Touch</h1>
+      <div class="two">
+      
+        <form  id="commentForm" >
+          <input name="name" type="text" class="feedback-input"  placeholder="Name" />
+          <input name="email" type="text" class="feedback-input" placeholder="Email" />
+          <textarea name="text" class="feedback-input" id="comment" placeholder="Comment"></textarea>
+          <input type="submit"  value="SUBMIT" />
+        </form>
+
+        <ul id="commentList" class="list-group mb-3" ></ul>
+
+        <script>
+          // Fetch and display comments when the page loads
+          document.addEventListener('DOMContentLoaded', () => {
+              fetch('/comments')
+                  .then(response => response.json())
+                  .then(comments => {
+                      const commentList = document.getElementById('commentList');
+                      comments.forEach(comment => {
+                          const newComment = document.createElement('li');
+                          newComment.className = 'list-group-item';
+                          newComment.textContent = comment.text;
+                          commentList.appendChild(newComment);
+                      });
+                  });
+      
+              // Handle form submission
+              document.getElementById('commentForm').addEventListener('submit', function(event) {
+                  event.preventDefault();
+                  const commentInput = document.getElementById('commentInput');
+                  if (commentInput.value.trim() !== "") {
+                      fetch('/comments', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ text: commentInput.value })
+                      })
+                      .then(response => response.json())
+                      .then(comment => {
+                          const newComment = document.createElement('li');
+                          newComment.className = 'list-group-item';
+                          newComment.textContent = comment.text;
+                          document.getElementById('commentList').appendChild(newComment);
+                          commentInput.value = '';
+                      });
+                  }
+              });
+          });
+      
+          
+      </script>
+      </div>
+    </div>
+    <%- include("partials/footer.ejs")%>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="./index.js" type="javascript"></script>
+    <!-- <script src="./comments.js" type="javascript"></script> -->
+</body>
+</html>
